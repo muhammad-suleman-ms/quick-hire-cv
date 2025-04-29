@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Check, Crown, X } from "lucide-react";
-import { useNavigate } from "wouter";
+import { useLocation } from "wouter";
 
 interface SubscriptionLimitDialogProps {
   open: boolean;
@@ -18,10 +18,10 @@ interface SubscriptionLimitDialogProps {
 }
 
 export function SubscriptionLimitDialog({ open, onClose, type }: SubscriptionLimitDialogProps) {
-  const navigate = useNavigate();
+  const [_, setLocation] = useLocation();
   
   const goToSubscription = () => {
-    navigate("/subscription");
+    setLocation("/subscription");
     onClose();
   };
   

@@ -15,6 +15,8 @@ import CreateResume from "@/pages/create-resume";
 import EditResume from "@/pages/edit-resume";
 import ViewResume from "@/pages/view-resume";
 import Subscription from "@/pages/subscription";
+import { AuthProvider } from "@/hooks/use-auth";
+import { ProtectedRoute } from "@/components/auth/protected-route";
 
 function Router() {
   return (
@@ -26,11 +28,21 @@ function Router() {
           <Route path="/templates" component={Templates} />
           <Route path="/signin" component={SignIn} />
           <Route path="/signup" component={SignUp} />
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/create-resume" component={CreateResume} />
-          <Route path="/edit-resume/:id" component={EditResume} />
-          <Route path="/view-resume/:id" component={ViewResume} />
-          <Route path="/subscription" component={Subscription} />
+          <ProtectedRoute path="/dashboard">
+            <Dashboard />
+          </ProtectedRoute>
+          <ProtectedRoute path="/create-resume">
+            <CreateResume />
+          </ProtectedRoute>
+          <ProtectedRoute path="/edit-resume/:id">
+            <EditResume />
+          </ProtectedRoute>
+          <ProtectedRoute path="/view-resume/:id">
+            <ViewResume />
+          </ProtectedRoute>
+          <ProtectedRoute path="/subscription">
+            <Subscription />
+          </ProtectedRoute>
           <Route component={NotFound} />
         </Switch>
       </main>
@@ -42,10 +54,12 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
