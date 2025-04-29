@@ -1,9 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+
+// Function for smooth scrolling
+const scrollToSection = (sectionId: string) => {
+  const element = document.getElementById(sectionId);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  } else if (window.location.pathname !== '/') {
+    // If not on homepage, navigate to homepage and then scroll
+    window.location.href = `/#${sectionId}`;
+  }
+};
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -46,15 +57,24 @@ export default function Navbar() {
               <Link to="/templates" className={`px-1 pt-1 font-medium ${isActive("/templates") ? "border-b-2 border-secondary text-primary" : "border-transparent text-neutral-500 hover:text-primary hover:border-neutral-300"}`}>
                 Templates
               </Link>
-              <a href="#features" className="border-transparent text-neutral-500 hover:text-primary hover:border-neutral-300 px-1 pt-1 font-medium">
+              <button 
+                onClick={() => scrollToSection('features')} 
+                className="border-transparent text-neutral-500 hover:text-primary hover:border-neutral-300 px-1 pt-1 font-medium cursor-pointer"
+              >
                 Features
-              </a>
-              <a href="#pricing" className="border-transparent text-neutral-500 hover:text-primary hover:border-neutral-300 px-1 pt-1 font-medium">
+              </button>
+              <button 
+                onClick={() => scrollToSection('pricing')} 
+                className="border-transparent text-neutral-500 hover:text-primary hover:border-neutral-300 px-1 pt-1 font-medium cursor-pointer"
+              >
                 Pricing
-              </a>
-              <a href="#blog" className="border-transparent text-neutral-500 hover:text-primary hover:border-neutral-300 px-1 pt-1 font-medium">
+              </button>
+              <Link 
+                to="/blog" 
+                className="border-transparent text-neutral-500 hover:text-primary hover:border-neutral-300 px-1 pt-1 font-medium"
+              >
                 Blog
-              </a>
+              </Link>
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
@@ -106,15 +126,31 @@ export default function Navbar() {
           <Link to="/templates" className={`block pl-3 pr-4 py-2 font-medium ${isActive("/templates") ? "bg-neutral-50 text-primary" : "text-neutral-500 hover:bg-neutral-50 hover:text-primary"}`}>
             Templates
           </Link>
-          <a href="#features" className="text-neutral-500 hover:bg-neutral-50 hover:text-primary block pl-3 pr-4 py-2 font-medium">
+          <button 
+            onClick={() => {
+              scrollToSection('features');
+              setMobileMenuOpen(false);
+            }} 
+            className="text-neutral-500 hover:bg-neutral-50 hover:text-primary block w-full text-left pl-3 pr-4 py-2 font-medium"
+          >
             Features
-          </a>
-          <a href="#pricing" className="text-neutral-500 hover:bg-neutral-50 hover:text-primary block pl-3 pr-4 py-2 font-medium">
+          </button>
+          <button 
+            onClick={() => {
+              scrollToSection('pricing');
+              setMobileMenuOpen(false);
+            }}
+            className="text-neutral-500 hover:bg-neutral-50 hover:text-primary block w-full text-left pl-3 pr-4 py-2 font-medium"
+          >
             Pricing
-          </a>
-          <a href="#blog" className="text-neutral-500 hover:bg-neutral-50 hover:text-primary block pl-3 pr-4 py-2 font-medium">
+          </button>
+          <Link 
+            to="/blog"
+            onClick={() => setMobileMenuOpen(false)} 
+            className="text-neutral-500 hover:bg-neutral-50 hover:text-primary block pl-3 pr-4 py-2 font-medium"
+          >
             Blog
-          </a>
+          </Link>
         </div>
         <div className="pt-4 pb-3 border-t border-neutral-200">
           {user ? (

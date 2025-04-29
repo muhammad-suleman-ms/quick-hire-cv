@@ -15,6 +15,9 @@ import CreateResume from "@/pages/create-resume";
 import EditResume from "@/pages/edit-resume";
 import ViewResume from "@/pages/view-resume";
 import Subscription from "@/pages/subscription";
+import Blog from "@/pages/blog";
+import BlogPost from "@/pages/blog-post";
+import ForgotPassword from "@/pages/forgot-password";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 
@@ -43,6 +46,8 @@ function Router() {
           <ProtectedRoute path="/subscription">
             <Subscription />
           </ProtectedRoute>
+          <Route path="/blog" component={Blog} />
+          <Route path="/blog/post/:id" component={BlogPost} />
           <Route component={NotFound} />
         </Switch>
       </main>
