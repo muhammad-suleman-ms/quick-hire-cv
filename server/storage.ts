@@ -1,9 +1,12 @@
 import { users, type User, type InsertUser, resumes, type Resume, type InsertResume, templates } from "@shared/schema";
 import session from "express-session";
-import createMemoryStore from "memorystore";
 import { Template } from "@shared/schema";
+import { db } from "./db";
+import { eq, and } from "drizzle-orm";
+import connectPg from "connect-pg-simple";
+import { pool } from "./db";
 
-const MemoryStore = createMemoryStore(session);
+const PostgresSessionStore = connectPg(session);
 
 // Sample template data
 const defaultTemplates: Template[] = [
@@ -73,94 +76,71 @@ export interface IStorage {
   sessionStore: session.Store;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private resumes: Map<number, Resume>;
+export class DatabaseStorage implements IStorage {
   private templates: Template[];
   sessionStore: session.Store;
-  private userIdCounter: number;
-  private resumeIdCounter: number;
 
   constructor() {
-    this.users = new Map();
-    this.resumes = new Map();
     this.templates = defaultTemplates;
-    this.userIdCounter = 1;
-    this.resumeIdCounter = 1;
-    this.sessionStore = new MemoryStore({
-      checkPeriod: 86400000 // 24 hours
+    this.sessionStore = new PostgresSessionStore({
+      pool,
+      createTableIfMissing: true
     });
   }
 
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.email === email,
-    );
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userIdCounter++;
-    const user: User = { 
-      ...insertUser, 
-      id,
-      createdAt: new Date()
-    };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
 
   async getResumeById(id: number): Promise<Resume | undefined> {
-    return this.resumes.get(id);
+    const [resume] = await db.select().from(resumes).where(eq(resumes.id, id));
+    return resume || undefined;
   }
 
   async getResumesByUserId(userId: number): Promise<Resume[]> {
-    return Array.from(this.resumes.values()).filter(
-      (resume) => resume.userId === userId
-    );
+    return await db.select().from(resumes).where(eq(resumes.userId, userId));
   }
 
   async createResume(insertResume: InsertResume): Promise<Resume> {
-    const id = this.resumeIdCounter++;
-    const resume: Resume = {
-      ...insertResume,
-      id,
-      lastUpdated: new Date()
-    };
-    this.resumes.set(id, resume);
+    const [resume] = await db.insert(resumes).values(insertResume).returning();
     return resume;
   }
 
   async updateResume(id: number, resumeData: Partial<Resume>): Promise<Resume> {
-    const existingResume = this.resumes.get(id);
-    if (!existingResume) {
+    const [updatedResume] = await db
+      .update(resumes)
+      .set({
+        ...resumeData,
+        lastUpdated: new Date()
+      })
+      .where(eq(resumes.id, id))
+      .returning();
+    
+    if (!updatedResume) {
       throw new Error("Resume not found");
     }
-
-    const updatedResume: Resume = {
-      ...existingResume,
-      ...resumeData,
-      lastUpdated: new Date()
-    };
     
-    this.resumes.set(id, updatedResume);
     return updatedResume;
   }
 
   async deleteResume(id: number): Promise<void> {
-    if (!this.resumes.has(id)) {
-      throw new Error("Resume not found");
-    }
-    this.resumes.delete(id);
+    await db.delete(resumes).where(eq(resumes.id, id));
   }
 
   getTemplates(): Template[] {
@@ -168,4 +148,4 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
