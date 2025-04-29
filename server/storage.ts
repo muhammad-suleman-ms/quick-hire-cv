@@ -13,9 +13,13 @@ export interface IStorage {
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserStripeInfo(userId: number, stripeInfo: { stripeCustomerId: string, stripeSubscriptionId: string }): Promise<User>;
   updateSubscriptionStatus(userId: number, status: string, expiresAt?: Date): Promise<User>;
+  setPasswordResetOTP(userEmail: string, otp: string): Promise<User | undefined>;
+  verifyPasswordResetOTP(userEmail: string, otp: string): Promise<boolean>;
+  updatePassword(userId: number, newPassword: string): Promise<User>;
   
   // Resume operations
   getResumes(userId: number): Promise<Resume[]>;
@@ -56,11 +60,68 @@ export class MemStorage implements IStorage {
     );
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.email === email,
+    );
+  }
+
+  async setPasswordResetOTP(userEmail: string, otp: string): Promise<User | undefined> {
+    const user = await this.getUserByEmail(userEmail);
+    if (!user) {
+      return undefined;
+    }
+
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 10); // OTP expires in 10 minutes
+
+    const updatedUser: User = {
+      ...user,
+      resetPasswordOTP: otp,
+      resetPasswordOTPExpiresAt: expiresAt
+    };
+
+    this.users.set(user.id, updatedUser);
+    return updatedUser;
+  }
+
+  async verifyPasswordResetOTP(userEmail: string, otp: string): Promise<boolean> {
+    const user = await this.getUserByEmail(userEmail);
+    if (!user || !user.resetPasswordOTP || !user.resetPasswordOTPExpiresAt) {
+      return false;
+    }
+
+    const isExpired = new Date() > new Date(user.resetPasswordOTPExpiresAt);
+    if (isExpired) {
+      return false;
+    }
+
+    return user.resetPasswordOTP === otp;
+  }
+
+  async updatePassword(userId: number, newPassword: string): Promise<User> {
+    const user = this.users.get(userId);
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+
+    const updatedUser: User = {
+      ...user,
+      password: newPassword,
+      resetPasswordOTP: null,
+      resetPasswordOTPExpiresAt: null
+    };
+
+    this.users.set(userId, updatedUser);
+    return updatedUser;
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
     const user: User = { 
       ...insertUser, 
       id,
+      email: insertUser.email || null,
       stripeCustomerId: null, 
       stripeSubscriptionId: null,
       subscriptionStatus: "inactive",
@@ -173,6 +234,62 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async setPasswordResetOTP(userEmail: string, otp: string): Promise<User | undefined> {
+    const user = await this.getUserByEmail(userEmail);
+    if (!user) {
+      return undefined;
+    }
+
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 10); // OTP expires in 10 minutes
+
+    const [updatedUser] = await db.update(users)
+      .set({
+        resetPasswordOTP: otp,
+        resetPasswordOTPExpiresAt: expiresAt
+      })
+      .where(eq(users.id, user.id))
+      .returning();
+
+    return updatedUser;
+  }
+
+  async verifyPasswordResetOTP(userEmail: string, otp: string): Promise<boolean> {
+    const user = await this.getUserByEmail(userEmail);
+    if (!user || !user.resetPasswordOTP || !user.resetPasswordOTPExpiresAt) {
+      return false;
+    }
+
+    const isExpired = new Date() > new Date(user.resetPasswordOTPExpiresAt);
+    if (isExpired) {
+      return false;
+    }
+
+    return user.resetPasswordOTP === otp;
+  }
+
+  async updatePassword(userId: number, newPassword: string): Promise<User> {
+    const [user] = await db.update(users)
+      .set({
+        password: newPassword,
+        resetPasswordOTP: null,
+        resetPasswordOTPExpiresAt: null
+      })
+      .where(eq(users.id, userId))
+      .returning();
+
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+
+    return user;
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db.insert(users)
       .values({
@@ -180,7 +297,9 @@ export class DatabaseStorage implements IStorage {
         stripeCustomerId: null,
         stripeSubscriptionId: null,
         subscriptionStatus: "inactive",
-        subscriptionExpiresAt: null
+        subscriptionExpiresAt: null,
+        resetPasswordOTP: null,
+        resetPasswordOTPExpiresAt: null
       })
       .returning();
     return user;

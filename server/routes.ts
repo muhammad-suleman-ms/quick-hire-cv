@@ -8,6 +8,7 @@ import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import { sendEmail, generateOTP, generateOTPEmailContent } from "./utils/sendgrid";
 
 // Initialize Stripe
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || "sk_test_example";
