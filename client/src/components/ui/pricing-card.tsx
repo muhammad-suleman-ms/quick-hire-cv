@@ -34,15 +34,18 @@ export default function PricingCard({
       isPrimary && "border-2 border-secondary relative"
     )}>
       {popularBadge && (
-        <div className="absolute inset-x-0 transform translate-y-px">
-          <div className="flex justify-center transform -translate-y-1/2">
-            <span className="inline-flex rounded-full bg-secondary px-4 py-1 text-xs font-semibold tracking-wider uppercase text-white">
+        <div className="absolute top-0 inset-x-0 transform translate-y-0">
+          <div className="flex justify-center">
+            <span className="inline-flex rounded-full bg-secondary px-6 py-1.5 text-sm font-semibold tracking-wider uppercase text-white shadow-md">
               Most Popular
             </span>
           </div>
         </div>
       )}
-      <div className="px-6 py-8 bg-white sm:p-10">
+      <div className={cn(
+        "px-6 bg-white sm:px-10",
+        popularBadge ? "pt-10 pb-8 sm:pt-12" : "py-8"
+      )}>
         <div>
           <h3 className="text-lg font-medium text-primary">{title}</h3>
           <div className="mt-4 flex items-baseline">
