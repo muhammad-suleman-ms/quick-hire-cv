@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Template } from "@shared/schema";
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 export default function TemplatesSection() {
   const [activeFilter, setActiveFilter] = useState("all");
@@ -36,16 +37,16 @@ export default function TemplatesSection() {
   ];
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-12 sm:py-16 bg-white">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8">
           <div>
-            <h2 className="text-3xl font-bold mb-2">Resume Templates</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-2">Resume Templates</h2>
             <p className="text-neutral-500">Choose from a gallery of professionally designed templates that employers love</p>
           </div>
-          <div className="mt-4 md:mt-0">
+          <div className="mt-4 sm:mt-0">
             <Link href="/templates">
-              <Button variant="outline">
+              <Button variant="outline" className="w-full sm:w-auto">
                 View all templates
               </Button>
             </Link>
@@ -53,31 +54,36 @@ export default function TemplatesSection() {
         </div>
         
         {/* Template Filter */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          {filters.map(filter => (
-            <Button 
-              key={filter.id}
-              variant={activeFilter === filter.id ? "default" : "outline"}
-              className={`rounded-full text-sm font-medium ${
-                activeFilter === filter.id 
-                  ? "bg-primary text-white" 
-                  : "bg-white border border-neutral-200 hover:bg-neutral-100"
-              }`}
-              onClick={() => setActiveFilter(filter.id)}
-            >
-              {filter.name}
-            </Button>
-          ))}
+        <div className="flex flex-wrap gap-2 mb-6 sm:mb-8 overflow-x-auto pb-2 -mx-2 px-2">
+          <div className="flex gap-2 min-w-full">
+            {filters.map(filter => (
+              <Button 
+                key={filter.id}
+                variant={activeFilter === filter.id ? "default" : "outline"}
+                className={`rounded-full text-sm font-medium whitespace-nowrap ${
+                  activeFilter === filter.id 
+                    ? "bg-primary text-white" 
+                    : "bg-white border border-neutral-200 hover:bg-neutral-100"
+                }`}
+                onClick={() => setActiveFilter(filter.id)}
+              >
+                {filter.name}
+              </Button>
+            ))}
+          </div>
         </div>
         
         {/* Template Grid */}
         {isLoading ? (
-          <div className="text-center py-12">Loading templates...</div>
+          <div className="text-center py-12 flex flex-col items-center">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-2" />
+            <p className="text-neutral-500">Loading templates...</p>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {filteredTemplates.map(template => (
-              <div key={template.id} className="group relative rounded-lg overflow-hidden shadow-sm border border-neutral-200 hover:shadow-md transition-shadow">
-                <div className="relative h-48 bg-neutral-100">
+              <div key={template.id} className="group relative rounded-lg overflow-hidden shadow-sm border border-neutral-200 hover:shadow-md transition-all duration-300">
+                <div className="relative h-40 sm:h-48 bg-neutral-100">
                   <img src={template.thumbnail} alt={template.name} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-primary/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Button variant="secondary" size="sm">Preview</Button>
@@ -90,7 +96,7 @@ export default function TemplatesSection() {
                 </div>
                 <div className="p-4">
                   <h3 className="font-semibold mb-1">{template.name}</h3>
-                  <p className="text-sm text-neutral-500 mb-2">{template.description}</p>
+                  <p className="text-sm text-neutral-500 mb-2 line-clamp-2">{template.description}</p>
                   <Link href={`/builder?template=${template.id}`}>
                     <Button className="w-full bg-blue-600 hover:bg-blue-700">
                       Use this template
@@ -101,6 +107,14 @@ export default function TemplatesSection() {
             ))}
           </div>
         )}
+        
+        <div className="text-center mt-8 sm:mt-12">
+          <Link href="/templates">
+            <Button variant="outline" className="mx-auto">
+              Browse all templates
+            </Button>
+          </Link>
+        </div>
       </div>
     </section>
   );
