@@ -30,13 +30,13 @@ export default function PricingCard({
 }: PricingCardProps) {
   return (
     <div className={cn(
-      "rounded-lg shadow-lg overflow-hidden",
-      isPrimary && "border-2 border-secondary relative"
+      "rounded-lg shadow-lg overflow-hidden transition-all",
+      isPrimary ? "border-2 border-secondary relative hover:shadow-xl" : "hover:shadow-lg"
     )}>
       {popularBadge && (
-        <div className="absolute top-0 inset-x-0 transform translate-y-0">
+        <div className="absolute top-0 inset-x-0 transform -translate-y-1/2">
           <div className="flex justify-center">
-            <span className="inline-flex rounded-full bg-secondary px-6 py-1.5 text-sm font-semibold tracking-wider uppercase text-white shadow-md">
+            <span className="inline-flex rounded-full bg-gradient-premium px-6 py-1.5 text-sm font-bold tracking-wider uppercase text-white shadow-md">
               Most Popular
             </span>
           </div>
@@ -79,9 +79,9 @@ export default function PricingCard({
           <Button 
             asChild
             className={cn(
-              "w-full",
+              "w-full transition-all",
               isPrimary 
-                ? "bg-secondary hover:bg-secondary/90 text-white" 
+                ? "bg-gradient-secondary hover:brightness-105 text-white shadow-md hover:shadow-lg" 
                 : "bg-white text-secondary border-secondary hover:bg-neutral-50"
             )}
             variant={isPrimary ? "default" : "outline"}

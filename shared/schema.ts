@@ -6,15 +6,19 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  email: text("email"),
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
   subscriptionStatus: text("subscription_status").default("inactive"),
   subscriptionExpiresAt: timestamp("subscription_expires_at"),
+  resetPasswordOTP: text("reset_password_otp"),
+  resetPasswordOTPExpiresAt: timestamp("reset_password_otp_expires_at"),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
+  email: true,
 });
 
 export const resumes = pgTable("resumes", {
