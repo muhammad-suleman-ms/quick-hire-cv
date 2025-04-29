@@ -58,8 +58,13 @@ export default function Home() {
               <div className="relative">
                 <img 
                   className="w-full rounded-lg shadow-xl" 
-                  src="https://images.unsplash.com/photo-1586473219010-2ffc57b0d282?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&h=900&q=80" 
-                  alt="Person creating resume on computer" 
+                  src="https://images.unsplash.com/photo-1627556592933-ffe99c1cd9eb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&h=900&q=80" 
+                  alt="Professional CV and resume documents" 
+                />
+                <img 
+                  className="absolute -top-6 -right-6 w-1/2 rounded-lg shadow-xl transform rotate-6" 
+                  src="https://images.unsplash.com/photo-1571867424488-4565932edb41?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=400&q=80" 
+                  alt="CV template example" 
                 />
                 <div className="absolute -bottom-6 -left-6 bg-white rounded-lg shadow-lg p-4 max-w-xs">
                   <div className="flex items-center">
