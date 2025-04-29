@@ -4,9 +4,9 @@ import { FaTwitter, FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="bg-primary-light text-white py-12">
+    <footer className="bg-primary text-white py-8 sm:py-12">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
             <div className="flex items-center gap-2 mb-4">
@@ -17,112 +17,112 @@ export default function Footer() {
             </div>
             <p className="text-neutral-300 mb-4">Creating professional resumes to help you land your dream job.</p>
             <div className="flex gap-4">
-              <a href="#" className="text-neutral-300 hover:text-white transition-colors">
+              <button className="text-neutral-300 hover:text-white transition-colors">
                 <FaTwitter size={18} />
-              </a>
-              <a href="#" className="text-neutral-300 hover:text-white transition-colors">
+              </button>
+              <button className="text-neutral-300 hover:text-white transition-colors">
                 <FaFacebook size={18} />
-              </a>
-              <a href="#" className="text-neutral-300 hover:text-white transition-colors">
+              </button>
+              <button className="text-neutral-300 hover:text-white transition-colors">
                 <FaInstagram size={18} />
-              </a>
-              <a href="#" className="text-neutral-300 hover:text-white transition-colors">
+              </button>
+              <button className="text-neutral-300 hover:text-white transition-colors">
                 <FaLinkedin size={18} />
-              </a>
+              </button>
             </div>
           </div>
           
           {/* Quick Links */}
-          <div>
+          <div className="mt-6 sm:mt-0">
             <h4 className="font-semibold mb-4">Features</h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/builder">
-                  <a className="text-neutral-300 hover:text-white transition-colors">Resume Builder</a>
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Resume Builder</span>
                 </Link>
               </li>
               <li>
                 <Link href="/templates">
-                  <a className="text-neutral-300 hover:text-white transition-colors">Templates</a>
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Templates</span>
                 </Link>
               </li>
               <li>
                 <Link href="/cover-letters">
-                  <a className="text-neutral-300 hover:text-white transition-colors">Cover Letters</a>
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Cover Letters</span>
                 </Link>
               </li>
               <li>
                 <Link href="/ai-suggestions">
-                  <a className="text-neutral-300 hover:text-white transition-colors">AI Suggestions</a>
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">AI Suggestions</span>
                 </Link>
               </li>
               <li>
                 <Link href="/ats-optimization">
-                  <a className="text-neutral-300 hover:text-white transition-colors">ATS Optimization</a>
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">ATS Optimization</span>
                 </Link>
               </li>
             </ul>
           </div>
           
           {/* Resources */}
-          <div>
+          <div className="mt-6 md:mt-0">
             <h4 className="font-semibold mb-4">Resources</h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/resume-examples">
-                  <a className="text-neutral-300 hover:text-white transition-colors">Resume Examples</a>
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Resume Examples</span>
                 </Link>
               </li>
               <li>
                 <Link href="/blog">
-                  <a className="text-neutral-300 hover:text-white transition-colors">Career Blog</a>
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Career Blog</span>
                 </Link>
               </li>
               <li>
                 <Link href="/job-search-tips">
-                  <a className="text-neutral-300 hover:text-white transition-colors">Job Search Tips</a>
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Job Search Tips</span>
                 </Link>
               </li>
               <li>
                 <Link href="/interview-guides">
-                  <a className="text-neutral-300 hover:text-white transition-colors">Interview Guides</a>
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Interview Guides</span>
                 </Link>
               </li>
               <li>
                 <Link href="/career-resources">
-                  <a className="text-neutral-300 hover:text-white transition-colors">Career Resources</a>
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Career Resources</span>
                 </Link>
               </li>
             </ul>
           </div>
           
           {/* Company */}
-          <div>
+          <div className="mt-6 md:mt-0">
             <h4 className="font-semibold mb-4">Company</h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/about">
-                  <a className="text-neutral-300 hover:text-white transition-colors">About Us</a>
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">About Us</span>
                 </Link>
               </li>
               <li>
                 <Link href="/pricing">
-                  <a className="text-neutral-300 hover:text-white transition-colors">Pricing</a>
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Pricing</span>
                 </Link>
               </li>
               <li>
                 <Link href="/contact">
-                  <a className="text-neutral-300 hover:text-white transition-colors">Contact Us</a>
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Contact Us</span>
                 </Link>
               </li>
               <li>
                 <Link href="/privacy">
-                  <a className="text-neutral-300 hover:text-white transition-colors">Privacy Policy</a>
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Privacy Policy</span>
                 </Link>
               </li>
               <li>
                 <Link href="/terms">
-                  <a className="text-neutral-300 hover:text-white transition-colors">Terms of Service</a>
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Terms of Service</span>
                 </Link>
               </li>
             </ul>
