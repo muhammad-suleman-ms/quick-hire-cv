@@ -1,7 +1,15 @@
 import { users, resumes, type User, type InsertUser, type Resume, type InsertResume } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+import connectPg from "connect-pg-simple";
+import session from "express-session";
+import { pool } from "./db";
 
 // Define storage interface
 export interface IStorage {
+  // Session store
+  sessionStore: session.Store;
+
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -22,12 +30,19 @@ export class MemStorage implements IStorage {
   private resumes: Map<number, Resume>;
   private currentUserId: number;
   private currentResumeId: number;
+  sessionStore: session.Store;
 
   constructor() {
     this.users = new Map();
     this.resumes = new Map();
     this.currentUserId = 1;
     this.currentResumeId = 1;
+    
+    // Create memory store for sessions
+    const MemoryStore = require('memorystore')(session);
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    });
   }
 
   // User operations
@@ -133,4 +148,114 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database Storage Implementation
+export class DatabaseStorage implements IStorage {
+  sessionStore: any;
+
+  constructor() {
+    const PostgresSessionStore = connectPg(session);
+    this.sessionStore = new PostgresSessionStore({
+      pool,
+      createTableIfMissing: true
+    });
+  }
+
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users)
+      .values({
+        ...insertUser,
+        stripeCustomerId: null,
+        stripeSubscriptionId: null,
+        subscriptionStatus: "inactive",
+        subscriptionExpiresAt: null
+      })
+      .returning();
+    return user;
+  }
+
+  async updateUserStripeInfo(userId: number, stripeInfo: { stripeCustomerId: string, stripeSubscriptionId: string }): Promise<User> {
+    const [user] = await db.update(users)
+      .set({
+        stripeCustomerId: stripeInfo.stripeCustomerId,
+        stripeSubscriptionId: stripeInfo.stripeSubscriptionId,
+        subscriptionStatus: "active",
+        subscriptionExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+    
+    return user;
+  }
+
+  async updateSubscriptionStatus(userId: number, status: string, expiresAt?: Date): Promise<User> {
+    const [user] = await db.update(users)
+      .set({
+        subscriptionStatus: status,
+        subscriptionExpiresAt: expiresAt || null
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+    
+    return user;
+  }
+
+  // Resume operations
+  async getResumes(userId: number): Promise<Resume[]> {
+    return await db.select()
+      .from(resumes)
+      .where(eq(resumes.userId, userId));
+  }
+
+  async getResumeById(id: number): Promise<Resume | undefined> {
+    const [resume] = await db.select()
+      .from(resumes)
+      .where(eq(resumes.id, id));
+    return resume;
+  }
+
+  async createResume(resume: InsertResume): Promise<Resume> {
+    const [newResume] = await db.insert(resumes)
+      .values(resume)
+      .returning();
+    return newResume;
+  }
+
+  async updateResume(id: number, data: Partial<Resume>): Promise<Resume | undefined> {
+    const [resume] = await db.update(resumes)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(eq(resumes.id, id))
+      .returning();
+    return resume;
+  }
+
+  async deleteResume(id: number): Promise<boolean> {
+    const result = await db.delete(resumes)
+      .where(eq(resumes.id, id));
+    return !!result;
+  }
+}
+
+// Use DatabaseStorage instead of MemStorage
+export const storage = new DatabaseStorage();

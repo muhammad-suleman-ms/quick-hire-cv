@@ -5,13 +5,16 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
-// Function for smooth scrolling
+// Function for smooth scrolling to section
 const scrollToSection = (sectionId: string) => {
   const element = document.getElementById(sectionId);
-  if (element) {
+  const isHomePage = window.location.pathname === '/';
+  
+  if (element && isHomePage) {
+    // If we're on the home page and the element exists, scroll to it
     element.scrollIntoView({ behavior: 'smooth' });
-  } else if (window.location.pathname !== '/') {
-    // If not on homepage, navigate to homepage and then scroll
+  } else {
+    // If not on homepage or element doesn't exist, navigate to homepage with the hash
     window.location.href = `/#${sectionId}`;
   }
 };
