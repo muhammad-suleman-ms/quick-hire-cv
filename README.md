@@ -2,7 +2,7 @@
 
 A modern, responsive resume builder application that helps users create ATS-friendly resumes and CVs with professional templates. Features include a user-friendly step-by-step builder, free and premium template options, and PDF export functionality.
 
-![Resume Builder Screenshot](https://images.unsplash.com/photo-1587614382346-4ec71cfdcbf5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&h=900&q=80)
+![Resume Builder Screenshot](https://images.unsplash.com/photo-1627556592933-ffe99c1cd9eb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&h=900&q=80)
 
 ## Features
 
