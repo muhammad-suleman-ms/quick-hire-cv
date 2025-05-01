@@ -18,7 +18,7 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
   try {
     await mailService.send({
       to: params.to,
-      from: 'noreply@resumebuilder.com', // Replace with your verified sender
+      from: 'noreply@QuickHireCV.com', // Replace with your verified sender
       subject: params.subject,
       text: params.text,
       html: params.html,
