@@ -36,7 +36,7 @@ A modern, responsive resume builder application that helps users create ATS-frie
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/resume-builder.git](https://github.com/muhammad-suleman-ms/quick-hire-cv.git
+   git clone https://github.com/yourusername/quick-hire-cv.git](https://github.com/muhammad-suleman-ms/quick-hire-cv.git
    cd quick-hire-cv
    ```
 
