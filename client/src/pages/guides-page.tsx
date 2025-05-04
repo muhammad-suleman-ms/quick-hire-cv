@@ -174,9 +174,11 @@ export default function GuidesPage() {
                   <span>45 minutes</span>
                 </div>
               </div>
-              <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700">
-                Read The Masterclass
-              </Button>
+              <Link href="/blog">
+                <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700">
+                  Read The Masterclass
+                </Button>
+              </Link>
             </div>
             <div className="h-60 md:h-auto overflow-hidden bg-blue-100 flex items-center justify-center">
               <img
