@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Resume, ResumeContent, Template, SubscriptionStatus } from "@shared/schema";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Loader2, FileDown, ArrowLeft, Eye, LockIcon, CrownIcon, AlertTriangleIcon } from "lucide-react";
+import { Loader2, FileDown, ArrowLeft, Eye, LockIcon, CrownIcon, AlertTriangleIcon, CheckCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardFooter, CardDescription, CardTitle } from "@/components/ui/card";
 import ResumeForm from "@/components/resume/resume-form";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -278,7 +278,10 @@ export default function ResumeBuilderPage() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             {id ? "Back to Dashboard" : "Back to Templates"}
           </Button>
-          <h1 className="text-2xl sm:text-3xl font-bold">{id ? `Editing: ${resumeTitle}` : "Create New Resume"}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Build your resume step-by-step</h1>
+          <p className="text-neutral-500 mt-1 text-sm max-w-xl">
+            Our intuitive resume builder guides you through each section, making it easy to create a professional and ATS-friendly resume.
+          </p>
           {selectedTemplateObject && (
             <p className="text-neutral-500 mt-1 text-sm">
               Template: {selectedTemplateObject.name} 
@@ -307,38 +310,165 @@ export default function ResumeBuilderPage() {
           </Button>
         </div>
       </div>
-
-      {previewMode ? (
-        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 max-w-4xl mx-auto">
-          <div className="text-center mb-6">
-            <p className="bg-blue-100 text-blue-800 inline-block px-3 py-1 rounded text-sm">
-              Preview Mode
-            </p>
+      
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
+        {/* Left sidebar with steps */}
+        <div className="md:col-span-3">
+          <div className="bg-white rounded-lg shadow-sm p-4 border">
+            <div className="space-y-6">
+              <div className={`flex items-start gap-3 ${currentStep === 1 ? 'text-blue-600' : 'text-gray-500'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm mt-0.5 
+                  ${currentStep === 1 ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}>1</div>
+                <div>
+                  <h3 className="font-medium">Personal Information</h3>
+                  <p className="text-xs text-muted-foreground">Start with your contact details and professional summary</p>
+                </div>
+              </div>
+              
+              <div className={`flex items-start gap-3 ${currentStep === 2 ? 'text-blue-600' : 'text-gray-500'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm mt-0.5
+                  ${currentStep === 2 ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}>2</div>
+                <div>
+                  <h3 className="font-medium">Work Experience</h3>
+                  <p className="text-xs text-muted-foreground">Add your work history with achievements and responsibilities</p>
+                </div>
+              </div>
+              
+              <div className={`flex items-start gap-3 ${currentStep === 3 ? 'text-blue-600' : 'text-gray-500'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm mt-0.5
+                  ${currentStep === 3 ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}>3</div>
+                <div>
+                  <h3 className="font-medium">Education</h3>
+                  <p className="text-xs text-muted-foreground">Include your academic background and certifications</p>
+                </div>
+              </div>
+              
+              <div className={`flex items-start gap-3 ${currentStep === 4 ? 'text-blue-600' : 'text-gray-500'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm mt-0.5
+                  ${currentStep === 4 ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}>4</div>
+                <div>
+                  <h3 className="font-medium">Skills & Expertise</h3>
+                  <p className="text-xs text-muted-foreground">Highlight your technical and soft skills relevant to the job</p>
+                </div>
+              </div>
+              
+              <div className={`flex items-start gap-3 ${currentStep === 5 ? 'text-blue-600' : 'text-gray-500'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm mt-0.5
+                  ${currentStep === 5 ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}>5</div>
+                <div>
+                  <h3 className="font-medium">Review & Download</h3>
+                  <p className="text-xs text-muted-foreground">Preview your finished resume and download in your preferred format</p>
+                </div>
+              </div>
+            </div>
+            
+            {!id && currentStep === 1 && (
+              <Button className="w-full mt-6" onClick={() => setCurrentStep(2)}>
+                Start Building Your Resume
+              </Button>
+            )}
           </div>
-          <div className="h-[500px] sm:h-[842px] w-full bg-white border relative">
-            {/* This would be the resume preview with actual rendered PDF */}
-            <div className="absolute inset-0 flex items-center justify-center text-neutral-400 p-4 text-center">
-              <p>Resume Preview (PDF rendering would be implemented here)</p>
+        </div>
+        
+        {/* Main content area */}
+        <div className="md:col-span-9">
+          {previewMode ? (
+            <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8">
+              <div className="text-center mb-6">
+                <p className="bg-blue-100 text-blue-800 inline-block px-3 py-1 rounded text-sm">
+                  Preview Mode
+                </p>
+              </div>
+              <div className="h-[500px] sm:h-[842px] w-full bg-white border relative">
+                {/* This would be the resume preview with actual rendered PDF */}
+                <div className="absolute inset-0 flex items-center justify-center text-neutral-400 p-4 text-center">
+                  <p>Resume Preview (PDF rendering would be implemented here)</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <Card>
+              <CardHeader className="pb-2 border-b">
+                <CardTitle className="text-xl flex items-center">
+                  <div className="mr-2 text-blue-600">Step {currentStep} of 5:</div>
+                  {currentStep === 1 && "Personal Information"}
+                  {currentStep === 2 && "Work Experience"}
+                  {currentStep === 3 && "Education"}
+                  {currentStep === 4 && "Skills & Expertise"}
+                  {currentStep === 5 && "Review & Download"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {selectedTemplate && (
+                  <ResumeForm
+                    resumeId={id ? parseInt(id) : undefined}
+                    templateId={selectedTemplate}
+                    initialData={resume?.content as ResumeContent}
+                    currentStep={currentStep}
+                    onNextStep={handleNextStep}
+                    onPrevStep={handlePrevStep}
+                    onSave={handleSave}
+                  />
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+      
+      {/* Video Marketing Section */}
+      <div className="mt-16 bg-slate-50 rounded-xl p-6 md:p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div>
+            <h2 className="text-2xl font-bold mb-4">How to Create an ATS-Optimized Resume</h2>
+            <p className="text-muted-foreground mb-6">
+              Learn how to create a resume that will get past Applicant Tracking Systems and impress recruiters. 
+              Our step-by-step guide will show you exactly what to include and what to avoid.
+            </p>
+            <div className="space-y-3">
+              <div className="flex items-start gap-2">
+                <div className="bg-blue-100 p-1 rounded text-blue-600 mt-0.5">
+                  <CheckCircle className="h-4 w-4" />
+                </div>
+                <p className="text-sm">Discover the exact keywords recruiters are looking for</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <div className="bg-blue-100 p-1 rounded text-blue-600 mt-0.5">
+                  <CheckCircle className="h-4 w-4" />
+                </div>
+                <p className="text-sm">Learn the optimal resume format for your industry</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <div className="bg-blue-100 p-1 rounded text-blue-600 mt-0.5">
+                  <CheckCircle className="h-4 w-4" />
+                </div>
+                <p className="text-sm">See real examples of successful resumes in action</p>
+              </div>
+            </div>
+            
+            <Button className="mt-6 bg-blue-600 hover:bg-blue-700">
+              Get More Resume Tips
+            </Button>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="aspect-video relative bg-slate-900">
+              <iframe 
+                className="absolute w-full h-full"
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                title="Resume Building Tutorial"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+            <div className="p-4">
+              <h3 className="font-semibold">Resume Building Masterclass</h3>
+              <p className="text-sm text-muted-foreground">A complete guide to creating professional resumes</p>
             </div>
           </div>
         </div>
-      ) : (
-        <Card className="mb-8">
-          <CardContent className="p-3 sm:p-6">
-            {selectedTemplate && (
-              <ResumeForm
-                resumeId={id ? parseInt(id) : undefined}
-                templateId={selectedTemplate}
-                initialData={resume?.content as ResumeContent}
-                currentStep={currentStep}
-                onNextStep={handleNextStep}
-                onPrevStep={handlePrevStep}
-                onSave={handleSave}
-              />
-            )}
-          </CardContent>
-        </Card>
-      )}
+      </div>
     </div>
   );
 }
