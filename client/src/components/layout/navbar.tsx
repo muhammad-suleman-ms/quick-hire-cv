@@ -32,6 +32,11 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-4 lg:space-x-8">
+          <Link href="/features">
+            <span className={`font-medium ${location === '/features' ? 'text-primary' : 'text-neutral-500 hover:text-primary'} transition-colors cursor-pointer`}>
+              Features
+            </span>
+          </Link>
           <Link href="/templates">
             <span className={`font-medium ${location === '/templates' ? 'text-primary' : 'text-neutral-500 hover:text-primary'} transition-colors cursor-pointer`}>
               Templates
@@ -40,6 +45,11 @@ export default function Navbar() {
           <Link href="/pricing">
             <span className={`font-medium ${location === '/pricing' ? 'text-primary' : 'text-neutral-500 hover:text-primary'} transition-colors cursor-pointer`}>
               Pricing
+            </span>
+          </Link>
+          <Link href="/guides">
+            <span className={`font-medium ${location === '/guides' ? 'text-primary' : 'text-neutral-500 hover:text-primary'} transition-colors cursor-pointer`}>
+              Guides
             </span>
           </Link>
           <Link href="/blog">
@@ -132,6 +142,14 @@ export default function Navbar() {
       {isMenuOpen && (
         <div className="md:hidden bg-white pb-4 px-4 shadow-lg absolute w-full">
           <nav className="flex flex-col space-y-3">
+            <Link href="/features">
+              <span 
+                className="font-medium text-neutral-500 hover:text-primary py-2 block cursor-pointer"
+                onClick={closeMenu}
+              >
+                Features
+              </span>
+            </Link>
             <Link href="/templates">
               <span 
                 className="font-medium text-neutral-500 hover:text-primary py-2 block cursor-pointer"
@@ -146,6 +164,14 @@ export default function Navbar() {
                 onClick={closeMenu}
               >
                 Pricing
+              </span>
+            </Link>
+            <Link href="/guides">
+              <span 
+                className="font-medium text-neutral-500 hover:text-primary py-2 block cursor-pointer"
+                onClick={closeMenu}
+              >
+                Guides
               </span>
             </Link>
             <Link href="/blog">
