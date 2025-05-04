@@ -99,14 +99,15 @@ export default function BlogPage() {
       {/* Category Filter */}
       <div className="flex flex-wrap gap-2 mb-10 justify-center">
         {categories.map((category) => (
-          <Button
-            key={category}
-            variant={category === "All" ? "default" : "outline"}
-            size="sm"
-            className="rounded-full"
-          >
-            {category}
-          </Button>
+          <Link key={category} href={`/blog?category=${category}`}>
+            <Button
+              variant={category === "All" ? "default" : "outline"}
+              size="sm"
+              className="rounded-full"
+            >
+              {category}
+            </Button>
+          </Link>
         ))}
       </div>
 
@@ -148,10 +149,12 @@ export default function BlogPage() {
                     <p className="text-xs text-muted-foreground">{featuredPost.authorRole}</p>
                   </div>
                 </div>
-                <Button className="w-full sm:w-auto">
-                  Read Full Article 
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
+                <Link href={`/blog/${featuredPost.id}`}>
+                  <Button className="w-full sm:w-auto">
+                    Read Full Article 
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -192,10 +195,12 @@ export default function BlogPage() {
                   {post.readTime}
                 </div>
               </div>
-              <Button variant="ghost" className="p-0 h-auto font-medium text-blue-600 hover:text-blue-800 hover:bg-transparent">
-                Read Article
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
+              <Link href={`/blog/${post.id}`}>
+                <Button variant="ghost" className="p-0 h-auto font-medium text-blue-600 hover:text-blue-800 hover:bg-transparent">
+                  Read Article
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </Link>
             </CardFooter>
           </Card>
         ))}
@@ -203,12 +208,20 @@ export default function BlogPage() {
 
       {/* Pagination */}
       <div className="flex justify-center mt-12">
-        <Button variant="outline" className="mx-1">1</Button>
-        <Button variant="outline" className="mx-1">2</Button>
-        <Button variant="outline" className="mx-1">3</Button>
-        <Button variant="outline" className="mx-1">
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+        <Link href="/blog?page=1">
+          <Button variant="outline" className="mx-1">1</Button>
+        </Link>
+        <Link href="/blog?page=2">
+          <Button variant="outline" className="mx-1">2</Button>
+        </Link>
+        <Link href="/blog?page=3">
+          <Button variant="outline" className="mx-1">3</Button>
+        </Link>
+        <Link href="/blog?page=2">
+          <Button variant="outline" className="mx-1">
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </Link>
       </div>
 
       {/* Newsletter Signup */}

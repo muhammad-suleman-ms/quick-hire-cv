@@ -135,14 +135,15 @@ export default function GuidesPage() {
       {/* Level Filter */}
       <div className="flex flex-wrap gap-2 mb-10 justify-center">
         {levels.map((level) => (
-          <Button
-            key={level}
-            variant={level === "All Levels" ? "default" : "outline"}
-            size="sm"
-            className="rounded-full"
-          >
-            {level}
-          </Button>
+          <Link key={level} href={`/guides?level=${level}`}>
+            <Button
+              variant={level === "All Levels" ? "default" : "outline"}
+              size="sm"
+              className="rounded-full"
+            >
+              {level}
+            </Button>
+          </Link>
         ))}
       </div>
 
@@ -215,7 +216,9 @@ export default function GuidesPage() {
                   {guide.timeToRead}
                 </div>
               </div>
-              <Button variant="outline" className="w-full">Read Guide</Button>
+              <Link href={`/blog?topic=${guide.title}`}>
+                <Button variant="outline" className="w-full">Read Guide</Button>
+              </Link>
             </CardFooter>
           </Card>
         ))}
@@ -257,7 +260,9 @@ export default function GuidesPage() {
               </CardDescription>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full">Join Community</Button>
+              <Link href="/blog?section=community">
+                <Button variant="outline" className="w-full">Join Community</Button>
+              </Link>
             </CardFooter>
           </Card>
 
@@ -274,7 +279,9 @@ export default function GuidesPage() {
               </CardDescription>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full">View Industry Guides</Button>
+              <Link href="/blog?category=Industry+Insights">
+                <Button variant="outline" className="w-full">View Industry Guides</Button>
+              </Link>
             </CardFooter>
           </Card>
         </div>
