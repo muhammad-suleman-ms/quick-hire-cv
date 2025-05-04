@@ -9,9 +9,12 @@ import AuthPage from "@/pages/auth-page";
 import DashboardPage from "@/pages/dashboard-page";
 import TemplateGalleryPage from "@/pages/template-gallery-page";
 import ResumeBuilderPage from "@/pages/resume-builder-page";
+import AdminDashboardPage from "@/pages/admin/dashboard-page";
 import { ProtectedRoute } from "./lib/protected-route";
+import { AdminProtectedRoute } from "./lib/admin-protected-route";
 import Navbar from "./components/layout/navbar";
 import Footer from "./components/layout/footer";
+import { AuthProvider } from "./hooks/use-auth";
 
 function Router() {
   return (
@@ -22,6 +25,11 @@ function Router() {
       <ProtectedRoute path="/templates" component={TemplateGalleryPage} />
       <ProtectedRoute path="/builder" component={ResumeBuilderPage} />
       <ProtectedRoute path="/builder/:id" component={ResumeBuilderPage} />
+      
+      {/* Admin Routes */}
+      <AdminProtectedRoute path="/admin" component={AdminDashboardPage} />
+      <AdminProtectedRoute path="/admin/dashboard" component={AdminDashboardPage} />
+      
       <Route component={NotFound} />
     </Switch>
   );
@@ -30,16 +38,18 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <main className="flex-grow">
-            <Router />
-          </main>
-          <Footer />
-        </div>
-        <Toaster />
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-grow">
+              <Router />
+            </main>
+            <Footer />
+          </div>
+          <Toaster />
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
