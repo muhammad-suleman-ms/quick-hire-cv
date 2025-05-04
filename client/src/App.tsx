@@ -1,72 +1,76 @@
 import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import Home from "@/pages/home";
-import Templates from "@/pages/templates";
-import SignIn from "@/pages/signin";
-import SignUp from "@/pages/signup";
-import Dashboard from "@/pages/dashboard";
-import CreateResume from "@/pages/create-resume";
-import EditResume from "@/pages/edit-resume";
-import ViewResume from "@/pages/view-resume";
-import Subscription from "@/pages/subscription";
-import Blog from "@/pages/blog";
-import BlogPost from "@/pages/blog-post";
-import ForgotPassword from "@/pages/forgot-password";
-import { AuthProvider } from "@/hooks/use-auth";
-import { ProtectedRoute } from "@/components/auth/protected-route";
+import HomePage from "@/pages/home-page";
+import AuthPage from "@/pages/auth-page";
+import DashboardPage from "@/pages/dashboard-page";
+import TemplateGalleryPage from "@/pages/template-gallery-page";
+import ResumeBuilderPage from "@/pages/resume-builder-page";
+import PricingPage from "@/pages/pricing-page";
+import FeaturesPage from "@/pages/features-page";
+import BlogPage from "@/pages/blog-page";
+import GuidesPage from "@/pages/guides-page";
+import AdminDashboardPage from "@/pages/admin/dashboard-page";
+import AdminInfoPage from "@/pages/admin/info-page";
+import { ProtectedRoute } from "./lib/protected-route";
+import { AdminProtectedRoute } from "./lib/admin-protected-route";
+import Navbar from "./components/layout/navbar";
+import Footer from "./components/layout/footer";
+import { useEffect } from "react";
+import { useAppDispatch } from "./store";
+import { fetchUser } from "./store/slices/authSlice";
+import { fetchTemplates } from "./store/slices/templateSlice";
 
 function Router() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
-      <main className="flex-grow">
-        <Switch>
-          <Route path="/" component={Home} />
-          <Route path="/templates" component={Templates} />
-          <Route path="/signin" component={SignIn} />
-          <Route path="/signup" component={SignUp} />
-          <Route path="/forgot-password" component={ForgotPassword} />
-          <ProtectedRoute path="/dashboard">
-            <Dashboard />
-          </ProtectedRoute>
-          <ProtectedRoute path="/create-resume">
-            <CreateResume />
-          </ProtectedRoute>
-          <ProtectedRoute path="/edit-resume/:id">
-            <EditResume />
-          </ProtectedRoute>
-          <ProtectedRoute path="/view-resume/:id">
-            <ViewResume />
-          </ProtectedRoute>
-          <ProtectedRoute path="/subscription">
-            <Subscription />
-          </ProtectedRoute>
-          <Route path="/blog" component={Blog} />
-          <Route path="/blog/post/:id" component={BlogPost} />
-          <Route component={NotFound} />
-        </Switch>
-      </main>
-      <Footer />
-    </div>
+    <Switch>
+      <Route path="/" component={HomePage} />
+      <Route path="/auth" component={AuthPage} />
+      <Route path="/pricing" component={PricingPage} />
+      <Route path="/features" component={FeaturesPage} />
+      <Route path="/blog" component={BlogPage} />
+      <Route path="/guides" component={GuidesPage} />
+      <Route path="/info/admin" component={AdminInfoPage} />
+      
+      {/* Protected Routes - require authentication */}
+      <ProtectedRoute path="/dashboard" component={DashboardPage} />
+      <ProtectedRoute path="/templates" component={TemplateGalleryPage} />
+      <ProtectedRoute path="/builder" component={ResumeBuilderPage} />
+      <ProtectedRoute path="/builder/:id" component={ResumeBuilderPage} />
+      
+      {/* Admin Routes - require admin privileges */}
+      <AdminProtectedRoute path="/admin" component={AdminDashboardPage} />
+      <AdminProtectedRoute path="/admin/dashboard" component={AdminDashboardPage} />
+      
+      <Route component={NotFound} />
+    </Switch>
   );
 }
 
 function App() {
+  const dispatch = useAppDispatch();
+
+  // Initialize global app data
+  useEffect(() => {
+    // Fetch user data on app load
+    dispatch(fetchUser());
+    
+    // Fetch templates data
+    dispatch(fetchTemplates());
+  }, [dispatch]);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
+    <TooltipProvider>
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
+        <main className="flex-grow">
           <Router />
-        </TooltipProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+        </main>
+        <Footer />
+      </div>
+      <Toaster />
+    </TooltipProvider>
   );
 }
 

@@ -1,188 +1,254 @@
-import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-
-// Function for smooth scrolling to section
-const scrollToSection = (sectionId: string) => {
-  const element = document.getElementById(sectionId);
-  const isHomePage = window.location.pathname === '/';
-  
-  if (element && isHomePage) {
-    // If we're on the home page and the element exists, scroll to it
-    element.scrollIntoView({ behavior: 'smooth' });
-  } else {
-    // If not on homepage or element doesn't exist, navigate to homepage with the hash
-    window.location.href = `/#${sectionId}`;
-  }
-};
+import { FileText, Menu, X, Shield } from "lucide-react";
+import { useState } from "react";
 
 export default function Navbar() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, logoutMutation } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [location] = useLocation();
-  
-  const { data: user } = useQuery<{ username: string } | null>({
-    queryKey: ["/api/me"],
-    staleTime: 60000, // 1 minute
-  });
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const closeMenu = () => setIsMenuOpen(false);
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
   };
 
-  const handleSignOut = async () => {
-    try {
-      await apiRequest("POST", "/api/signout", {});
-      window.location.href = "/";
-    } catch (error) {
-      console.error("Failed to sign out:", error);
-    }
-  };
-
-  const isActive = (path: string) => {
-    return location === path;
-  };
+  const isAdmin = user?.role === 'admin';
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="text-xl font-bold text-primary">ResumeBuilder</span>
-            </Link>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <Link to="/" className={`px-1 pt-1 font-medium ${isActive("/") ? "border-b-2 border-secondary text-primary" : "border-transparent text-neutral-500 hover:text-primary hover:border-neutral-300"}`}>
-                Home
+    <header className="bg-white shadow-sm sticky top-0 z-50 w-full">
+      <div className="container mx-auto px-4 py-3 md:py-4 flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
+            <FileText className="h-4 w-4 text-white" />
+          </div>
+          <Link href="/">
+            <span className="text-lg md:text-xl font-bold cursor-pointer">ResumeBuilder</span>
+          </Link>
+        </div>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-4 lg:space-x-8">
+          <Link href="/features">
+            <span className={`font-medium ${location === '/features' ? 'text-primary' : 'text-neutral-500 hover:text-primary'} transition-colors cursor-pointer`}>
+              Features
+            </span>
+          </Link>
+          <Link href="/templates">
+            <span className={`font-medium ${location === '/templates' ? 'text-primary' : 'text-neutral-500 hover:text-primary'} transition-colors cursor-pointer`}>
+              Templates
+            </span>
+          </Link>
+          <Link href="/pricing">
+            <span className={`font-medium ${location === '/pricing' ? 'text-primary' : 'text-neutral-500 hover:text-primary'} transition-colors cursor-pointer`}>
+              Pricing
+            </span>
+          </Link>
+          <Link href="/guides">
+            <span className={`font-medium ${location === '/guides' ? 'text-primary' : 'text-neutral-500 hover:text-primary'} transition-colors cursor-pointer`}>
+              Guides
+            </span>
+          </Link>
+          <Link href="/blog">
+            <span className={`font-medium ${location === '/blog' ? 'text-primary' : 'text-neutral-500 hover:text-primary'} transition-colors cursor-pointer`}>
+              Blog
+            </span>
+          </Link>
+        </nav>
+
+        <div className="flex items-center gap-2 md:gap-4">
+          {user ? (
+            <>
+              {isAdmin && (
+                <Link href="/admin/dashboard">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="hidden md:inline-flex items-center gap-1 text-purple-700 hover:text-purple-800 hover:bg-purple-50"
+                  >
+                    <Shield className="h-4 w-4" />
+                    Admin
+                  </Button>
+                </Link>
+              )}
+              <Link href="/dashboard">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="hidden md:inline-flex border-blue-600 text-blue-600 hover:bg-blue-50"
+                >
+                  Dashboard
+                </Button>
               </Link>
-              <Link to="/templates" className={`px-1 pt-1 font-medium ${isActive("/templates") ? "border-b-2 border-secondary text-primary" : "border-transparent text-neutral-500 hover:text-primary hover:border-neutral-300"}`}>
-                Templates
+              <Link href="/builder">
+                <Button 
+                  size="sm"
+                  className="hidden md:inline-flex bg-blue-600 hover:bg-blue-700"
+                >
+                  Create Resume
+                </Button>
               </Link>
-              <button 
-                onClick={() => scrollToSection('features')} 
-                className="border-transparent text-neutral-500 hover:text-primary hover:border-neutral-300 px-1 pt-1 font-medium cursor-pointer"
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="hidden md:inline-flex"
+                onClick={handleLogout}
+              >
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link href="/auth">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="hidden md:inline-flex border-blue-600 text-blue-600 hover:bg-blue-50"
+                >
+                  Sign in
+                </Button>
+              </Link>
+              <Link href="/auth">
+                <Button 
+                  size="sm"
+                  className="hidden md:inline-flex bg-blue-600 hover:bg-blue-700"
+                >
+                  Create Resume
+                </Button>
+              </Link>
+            </>
+          )}
+          
+          {/* Mobile menu button */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="md:hidden"
+            onClick={toggleMenu}
+          >
+            {isMenuOpen ? (
+              <X className="h-6 w-6 text-neutral-500" />
+            ) : (
+              <Menu className="h-6 w-6 text-neutral-500" />
+            )}
+          </Button>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      {isMenuOpen && (
+        <div className="md:hidden bg-white pb-4 px-4 shadow-lg absolute w-full">
+          <nav className="flex flex-col space-y-3">
+            <Link href="/features">
+              <span 
+                className="font-medium text-neutral-500 hover:text-primary py-2 block cursor-pointer"
+                onClick={closeMenu}
               >
                 Features
-              </button>
-              <button 
-                onClick={() => scrollToSection('pricing')} 
-                className="border-transparent text-neutral-500 hover:text-primary hover:border-neutral-300 px-1 pt-1 font-medium cursor-pointer"
+              </span>
+            </Link>
+            <Link href="/templates">
+              <span 
+                className="font-medium text-neutral-500 hover:text-primary py-2 block cursor-pointer"
+                onClick={closeMenu}
+              >
+                Templates
+              </span>
+            </Link>
+            <Link href="/pricing">
+              <span 
+                className="font-medium text-neutral-500 hover:text-primary py-2 block cursor-pointer"
+                onClick={closeMenu}
               >
                 Pricing
-              </button>
-              <Link 
-                to="/blog" 
-                className="border-transparent text-neutral-500 hover:text-primary hover:border-neutral-300 px-1 pt-1 font-medium"
+              </span>
+            </Link>
+            <Link href="/guides">
+              <span 
+                className="font-medium text-neutral-500 hover:text-primary py-2 block cursor-pointer"
+                onClick={closeMenu}
+              >
+                Guides
+              </span>
+            </Link>
+            <Link href="/blog">
+              <span 
+                className="font-medium text-neutral-500 hover:text-primary py-2 block cursor-pointer"
+                onClick={closeMenu}
               >
                 Blog
-              </Link>
-            </div>
-          </div>
-          <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
+              </span>
+            </Link>
+            
             {user ? (
               <>
-                <Link to="/dashboard" className="text-neutral-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
-                  Dashboard
+                <Link href="/dashboard">
+                  <span 
+                    className="font-medium text-neutral-500 hover:text-primary py-2 block cursor-pointer"
+                    onClick={closeMenu}
+                  >
+                    Dashboard
+                  </span>
                 </Link>
-                <Button variant="ghost" onClick={handleSignOut} className="text-neutral-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
-                  Sign Out
-                </Button>
-                <Link to="/create-resume">
-                  <Button className="bg-secondary text-white hover:bg-secondary/90 px-4 py-2 rounded-md text-sm font-medium">
+                
+                {isAdmin && (
+                  <Link href="/admin/dashboard">
+                    <span 
+                      className="font-medium text-purple-600 hover:text-purple-800 py-2 block cursor-pointer flex items-center gap-1"
+                      onClick={closeMenu}
+                    >
+                      <Shield className="h-4 w-4" />
+                      Admin Dashboard
+                    </span>
+                  </Link>
+                )}
+                
+                <Link href="/builder">
+                  <Button 
+                    className="w-full bg-blue-600 hover:bg-blue-700 mt-2"
+                    onClick={closeMenu}
+                  >
                     Create Resume
                   </Button>
                 </Link>
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-2"
+                  onClick={() => {
+                    handleLogout();
+                    closeMenu();
+                  }}
+                >
+                  Sign Out
+                </Button>
               </>
             ) : (
               <>
-                <Link to="/signin" className="text-neutral-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
-                  Sign In
+                <Link href="/auth">
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 mt-2"
+                    onClick={closeMenu}
+                  >
+                    Sign in
+                  </Button>
                 </Link>
-                <Link to="/create-resume">
-                  <Button className="bg-secondary text-white hover:bg-secondary/90 px-4 py-2 rounded-md text-sm font-medium">
+                <Link href="/auth">
+                  <Button 
+                    className="w-full bg-blue-600 hover:bg-blue-700 mt-2"
+                    onClick={closeMenu}
+                  >
                     Create Resume
                   </Button>
                 </Link>
               </>
             )}
-          </div>
-          <div className="flex items-center sm:hidden">
-            <button
-              type="button"
-              className="text-neutral-500 hover:text-primary p-2 rounded-md"
-              onClick={toggleMobileMenu}
-            >
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
-          </div>
+          </nav>
         </div>
-      </div>
-      
-      {/* Mobile menu */}
-      <div className={`sm:hidden ${mobileMenuOpen ? 'block' : 'hidden'}`} id="mobile-menu">
-        <div className="pt-2 pb-3 space-y-1">
-          <Link to="/" className={`block pl-3 pr-4 py-2 font-medium ${isActive("/") ? "bg-neutral-50 text-primary" : "text-neutral-500 hover:bg-neutral-50 hover:text-primary"}`}>
-            Home
-          </Link>
-          <Link to="/templates" className={`block pl-3 pr-4 py-2 font-medium ${isActive("/templates") ? "bg-neutral-50 text-primary" : "text-neutral-500 hover:bg-neutral-50 hover:text-primary"}`}>
-            Templates
-          </Link>
-          <button 
-            onClick={() => {
-              scrollToSection('features');
-              setMobileMenuOpen(false);
-            }} 
-            className="text-neutral-500 hover:bg-neutral-50 hover:text-primary block w-full text-left pl-3 pr-4 py-2 font-medium"
-          >
-            Features
-          </button>
-          <button 
-            onClick={() => {
-              scrollToSection('pricing');
-              setMobileMenuOpen(false);
-            }}
-            className="text-neutral-500 hover:bg-neutral-50 hover:text-primary block w-full text-left pl-3 pr-4 py-2 font-medium"
-          >
-            Pricing
-          </button>
-          <Link 
-            to="/blog"
-            onClick={() => setMobileMenuOpen(false)} 
-            className="text-neutral-500 hover:bg-neutral-50 hover:text-primary block pl-3 pr-4 py-2 font-medium"
-          >
-            Blog
-          </Link>
-        </div>
-        <div className="pt-4 pb-3 border-t border-neutral-200">
-          {user ? (
-            <>
-              <div className="flex items-center px-4">
-                <Link to="/dashboard" className="block w-full text-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50">
-                  Dashboard
-                </Link>
-              </div>
-              <div className="mt-3 px-4">
-                <Button onClick={handleSignOut} className="block w-full text-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50">
-                  Sign Out
-                </Button>
-              </div>
-            </>
-          ) : (
-            <div className="flex items-center px-4">
-              <Link to="/signin" className="block w-full text-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50">
-                Sign in
-              </Link>
-            </div>
-          )}
-          <div className="mt-3 px-4">
-            <Link to="/create-resume" className="block w-full text-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-secondary hover:bg-secondary/90">
-              Create Resume
-            </Link>
-          </div>
-        </div>
-      </div>
-    </nav>
+      )}
+    </header>
   );
 }

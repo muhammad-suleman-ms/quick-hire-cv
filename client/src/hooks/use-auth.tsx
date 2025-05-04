@@ -2,161 +2,104 @@ import { createContext, ReactNode, useContext } from "react";
 import {
   useQuery,
   useMutation,
+  UseMutationResult,
 } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { insertUserSchema, User as SelectUser, InsertUser, LoginUser } from "@shared/schema";
+import { getQueryFn, apiRequest, queryClient } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
-interface User {
-  id: number;
-  username: string;
-}
-
-interface AuthContextType {
-  user: User | null;
+type AuthContextType = {
+  user: SelectUser | null;
   isLoading: boolean;
   error: Error | null;
-  signIn: (credentials: SignInCredentials) => Promise<User>;
-  signUp: (credentials: SignUpCredentials) => Promise<User>;
-  signOut: () => Promise<void>;
-}
+  loginMutation: UseMutationResult<SelectUser, Error, LoginUser>;
+  logoutMutation: UseMutationResult<void, Error, void>;
+  registerMutation: UseMutationResult<SelectUser, Error, InsertUser>;
+};
 
-interface SignInCredentials {
-  username: string;
-  password: string;
-}
-
-interface SignUpCredentials {
-  username: string;
-  password: string;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
-
+export const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
-  
   const {
     data: user,
     error,
     isLoading,
-  } = useQuery<User | null, Error>({
-    queryKey: ["/api/me"],
-    queryFn: async () => {
-      try {
-        const res = await fetch("/api/me");
-        if (res.status === 401) {
-          return null;
-        }
-        if (!res.ok) {
-          throw new Error("Failed to fetch user data");
-        }
-        return await res.json();
-      } catch (error) {
-        console.error("Error fetching user:", error);
-        return null;
-      }
-    },
+  } = useQuery<SelectUser | undefined, Error>({
+    queryKey: ["/api/user"],
+    queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
-  const signInMutation = useMutation({
-    mutationFn: async (credentials: SignInCredentials) => {
-      const res = await apiRequest("POST", "/api/signin", credentials);
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Failed to sign in");
-      }
+  const loginMutation = useMutation({
+    mutationFn: async (credentials: LoginUser) => {
+      const res = await apiRequest("POST", "/api/login", credentials);
       return await res.json();
     },
-    onSuccess: (user: User) => {
-      queryClient.setQueryData(["/api/me"], user);
+    onSuccess: (user: SelectUser) => {
+      queryClient.setQueryData(["/api/user"], user);
       toast({
-        title: "Signed in successfully",
-        description: `Welcome back, ${user.username}!`,
+        title: "Welcome back!",
+        description: "You have successfully logged in.",
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Sign in failed",
+        title: "Login failed",
         description: error.message,
         variant: "destructive",
       });
-      throw error;
     },
   });
 
-  const signUpMutation = useMutation({
-    mutationFn: async (credentials: SignUpCredentials) => {
-      const res = await apiRequest("POST", "/api/signup", credentials);
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Failed to sign up");
-      }
+  const registerMutation = useMutation({
+    mutationFn: async (credentials: InsertUser) => {
+      const res = await apiRequest("POST", "/api/register", credentials);
       return await res.json();
     },
-    onSuccess: (user: User) => {
-      queryClient.setQueryData(["/api/me"], user);
+    onSuccess: (user: SelectUser) => {
+      queryClient.setQueryData(["/api/user"], user);
       toast({
-        title: "Signed up successfully",
-        description: `Welcome, ${user.username}!`,
+        title: "Account created",
+        description: "Your account has been created successfully.",
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Sign up failed",
+        title: "Registration failed",
         description: error.message,
         variant: "destructive",
       });
-      throw error;
     },
   });
 
-  const signOutMutation = useMutation({
+  const logoutMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/signout");
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Failed to sign out");
-      }
+      await apiRequest("POST", "/api/logout");
     },
     onSuccess: () => {
-      queryClient.setQueryData(["/api/me"], null);
-      queryClient.invalidateQueries({
-        queryKey: ["/api/subscription"],
-      });
+      queryClient.setQueryData(["/api/user"], null);
       toast({
-        title: "Signed out successfully",
+        title: "Logged out",
+        description: "You have been logged out successfully.",
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Sign out failed",
+        title: "Logout failed",
         description: error.message,
         variant: "destructive",
       });
     },
   });
-
-  const signIn = async (credentials: SignInCredentials) => {
-    return await signInMutation.mutateAsync(credentials);
-  };
-
-  const signUp = async (credentials: SignUpCredentials) => {
-    return await signUpMutation.mutateAsync(credentials);
-  };
-
-  const signOut = async () => {
-    await signOutMutation.mutateAsync();
-  };
 
   return (
     <AuthContext.Provider
       value={{
-        user: user || null,
+        user: user ?? null,
         isLoading,
-        error: error || null,
-        signIn,
-        signUp,
-        signOut,
+        error,
+        loginMutation,
+        logoutMutation,
+        registerMutation,
       }}
     >
       {children}

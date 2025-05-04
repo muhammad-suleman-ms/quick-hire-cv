@@ -1,87 +1,136 @@
 import { Link } from "wouter";
-import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { FileText } from "lucide-react";
+import { FaTwitter, FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="bg-primary">
-      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="md:col-span-1">
-            <h3 className="text-xl font-bold text-white">ResumeBuilder</h3>
-            <p className="mt-4 text-neutral-400">
-              Create professional, ATS-friendly resumes that help you land your dream job.
-            </p>
-            <div className="mt-6 flex space-x-6">
-              <a href="#" className="text-neutral-400 hover:text-white">
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-neutral-400 hover:text-white">
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-neutral-400 hover:text-white">
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-neutral-400 hover:text-white">
-                <Linkedin className="h-5 w-5" />
-              </a>
+    <footer className="bg-primary text-white py-8 sm:py-12">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+          {/* Company Info */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
+                <FileText className="h-4 w-4 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold">ResumeBuilder</h3>
+            </div>
+            <p className="text-neutral-300 mb-4">Creating professional resumes to help you land your dream job.</p>
+            <div className="flex gap-4">
+              <button className="text-neutral-300 hover:text-white transition-colors">
+                <FaTwitter size={18} />
+              </button>
+              <button className="text-neutral-300 hover:text-white transition-colors">
+                <FaFacebook size={18} />
+              </button>
+              <button className="text-neutral-300 hover:text-white transition-colors">
+                <FaInstagram size={18} />
+              </button>
+              <button className="text-neutral-300 hover:text-white transition-colors">
+                <FaLinkedin size={18} />
+              </button>
             </div>
           </div>
-          <div>
-            <h3 className="text-sm font-semibold text-white tracking-wider uppercase">Product</h3>
-            <ul className="mt-4 space-y-4">
+          
+          {/* Quick Links */}
+          <div className="mt-6 sm:mt-0">
+            <h4 className="font-semibold mb-4">Features</h4>
+            <ul className="space-y-2">
               <li>
-                <a href="#features" className="text-neutral-400 hover:text-white">Features</a>
+                <Link href="/builder">
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Resume Builder</span>
+                </Link>
               </li>
               <li>
-                <Link href="/templates" className="text-neutral-400 hover:text-white">Templates</Link>
+                <Link href="/templates">
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Templates</span>
+                </Link>
               </li>
               <li>
-                <a href="#pricing" className="text-neutral-400 hover:text-white">Pricing</a>
+                <Link href="/cover-letters">
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Cover Letters</span>
+                </Link>
               </li>
               <li>
-                <a href="#examples" className="text-neutral-400 hover:text-white">Examples</a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold text-white tracking-wider uppercase">Resources</h3>
-            <ul className="mt-4 space-y-4">
-              <li>
-                <a href="#blog" className="text-neutral-400 hover:text-white">Blog</a>
+                <Link href="/ai-suggestions">
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">AI Suggestions</span>
+                </Link>
               </li>
               <li>
-                <a href="#tips" className="text-neutral-400 hover:text-white">Resume Tips</a>
-              </li>
-              <li>
-                <a href="#advice" className="text-neutral-400 hover:text-white">Career Advice</a>
-              </li>
-              <li>
-                <a href="#help" className="text-neutral-400 hover:text-white">Help Center</a>
+                <Link href="/ats-optimization">
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">ATS Optimization</span>
+                </Link>
               </li>
             </ul>
           </div>
-          <div>
-            <h3 className="text-sm font-semibold text-white tracking-wider uppercase">Company</h3>
-            <ul className="mt-4 space-y-4">
+          
+          {/* Resources */}
+          <div className="mt-6 md:mt-0">
+            <h4 className="font-semibold mb-4">Resources</h4>
+            <ul className="space-y-2">
               <li>
-                <a href="#about" className="text-neutral-400 hover:text-white">About Us</a>
+                <Link href="/resume-examples">
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Resume Examples</span>
+                </Link>
               </li>
               <li>
-                <a href="#contact" className="text-neutral-400 hover:text-white">Contact</a>
+                <Link href="/blog">
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Career Blog</span>
+                </Link>
               </li>
               <li>
-                <a href="#privacy" className="text-neutral-400 hover:text-white">Privacy Policy</a>
+                <Link href="/job-search-tips">
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Job Search Tips</span>
+                </Link>
               </li>
               <li>
-                <a href="#terms" className="text-neutral-400 hover:text-white">Terms of Service</a>
+                <Link href="/interview-guides">
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Interview Guides</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/career-resources">
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Career Resources</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+          
+          {/* Company */}
+          <div className="mt-6 md:mt-0">
+            <h4 className="font-semibold mb-4">Company</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/about">
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">About Us</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/pricing">
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Pricing</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact">
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Contact Us</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy">
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Privacy Policy</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms">
+                  <span className="text-neutral-300 hover:text-white transition-colors cursor-pointer">Terms of Service</span>
+                </Link>
               </li>
             </ul>
           </div>
         </div>
-        <div className="mt-12 border-t border-neutral-700 pt-8">
-          <p className="text-neutral-400 text-sm text-center">
-            &copy; {new Date().getFullYear()} ResumeBuilder. All rights reserved.
-          </p>
+        
+        <div className="border-t border-neutral-700 mt-8 pt-8 text-center text-neutral-400 text-sm">
+          <p>&copy; {new Date().getFullYear()} ResumeBuilder. All rights reserved.</p>
         </div>
       </div>
     </footer>
