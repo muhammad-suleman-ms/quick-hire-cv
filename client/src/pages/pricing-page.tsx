@@ -126,9 +126,11 @@ export default function PricingPage() {
                 Current Plan
               </Button>
             ) : (
-              <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                Upgrade to Premium
-              </Button>
+              <Link href="/templates?premium=true">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  Upgrade to Premium
+                </Button>
+              </Link>
             )}
           </CardFooter>
         </Card>
