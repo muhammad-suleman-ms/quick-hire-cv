@@ -131,7 +131,7 @@ export default function Dashboard() {
                       <div>
                         <h3 className="font-medium text-lg">{resume.name}</h3>
                         <p className="text-sm text-neutral-500">
-                          Last updated {getUpdatedDaysAgo(resume.updatedAt)} days ago
+                          Last updated {getUpdatedDaysAgo(resume.updatedAt)} days ago:
                         </p>
                       </div>
                     </div>
